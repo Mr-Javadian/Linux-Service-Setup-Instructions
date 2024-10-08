@@ -1,0 +1,116 @@
+
+sudo apt update & upgrade -y
+
+sudo apt install nginx
+
+sudo apt install mysql-server
+
+sudo mysql_secure_installation
+
+sudo apt install php php-fpm php-mysql php-xml php-mbstring php-curl php-zip php-gd php-soap php-intl php-cli
+
+php -v
+
+sudo mysql -u root -p
+
+CREATE DATABASE wordpress;
+
+# replace username and password 
+CREATE USER 'username'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON wordpress.* TO 'username'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+
+
+
+
+cd /var/www/html
+
+sudo wget https://wordpress.org/latest.tar.gz
+
+sudo tar xzvf latest.tar.gz
+
+sudo mv wordpress/* .
+
+sudo rm index.html
+
+sudo cp wp-config-sample.php wp-config.php
+
+sudo nano wp-config.php
+
+
+###
+updater folowing
+define('DB_NAME', 'wordpress');
+define('DB_USER', 'username');
+define('DB_PASSWORD', 'password');
+###
+
+sudo chown -R www-data:www-data /var/www/html
+sudo chmod -R 755 /var/www/html
+
+
+sudo nano /etc/nginx/sites-available/wordpress
+
+##put following text in the file and replace domain with server ip 
+## make sure your php version you config in the file is the same you installed
+
+
+------
+server {
+    listen 80;
+    server_name your_domain.com;
+
+    root /var/www/html;
+    index index.php index.html index.htm;
+
+    location / {
+        try_files $uri $uri/ /index.php?$args;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php7.x-fpm.sock; # Replace with your PHP version
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+        expires 30d;
+        access_log off;
+        add_header Cache-Control "public";
+    }
+}
+
+------
+
+
+
+sudo nginx -t
+
+sudo systemctl restart nginx
+
+http://your_domain.com/wp-admin
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
