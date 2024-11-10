@@ -1,14 +1,11 @@
 Installation Steps
-1. Install BIND 9
-First, install BIND 9 using the following command:
+___________________
 
 sudo apt update
 sudo apt install bind9 bind9utils bind9-doc
-2. Configure BIND 9
-2.1. Configure the Options File
-Edit the named.conf.options configuration file:
-
+---------------------------------------------
 sudo nano /etc/bind/named.conf.options
+
 Add or modify the following settings:
 
 options {
@@ -24,9 +21,7 @@ options {
     listen-on-v6 { any; };
     listen-on { any; }; // Allow BIND to listen on all IPs
 };
-2.2. Create a New Zone
-Add a new zone to the named.conf.local file:
-
+---------------------------------------------
 
 sudo nano /etc/bind/named.conf.local
 Add the new zone configuration:
@@ -36,12 +31,11 @@ zone "example.local" {
     type master;
     file "/etc/bind/db.example.local";
 };
-2.3. Create the Zone File
-Create the new zone file:
 
+---------------------------------------------
 
-sudo cp /etc/bind/db.empty /etc/bind/db.example.local
 sudo nano /etc/bind/db.example.local
+
 Add the following content to the zone file:
 
 
@@ -55,33 +49,29 @@ $TTL    604800
 
 ; DNS Records
 @       IN      NS      ns.example.local.
-ns      IN      A       192.168.1.100
-www     IN      A       192.168.1.100
-3. Verify Configuration
-Before starting BIND, verify the configurations:
+@       IN      A       192.168.1.100  ; IP address for example.local
+ns      IN      A       192.168.1.100  ; Name server for example.local
+www     IN      A       192.168.1.100  ; www record for example.local
 
+---------------------------------------------
 
 sudo named-checkconf
 sudo named-checkzone example.local /etc/bind/db.example.local
-4. Open DNS Port in Firewall
-If using UFW, open port 53:
-
+---------------------------------------------
 
 sudo ufw allow 53
-5. Start BIND
-Restart BIND 9:
 
+---------------------------------------------
 
 sudo systemctl restart bind9
-Check the status of BIND:
+
+---------------------------------------------
 
 
 sudo systemctl status bind9
-6. Test DNS Settings
-Use the dig command to test the DNS:
-
 
 dig @localhost example.local
+
 You should receive an output similar to this:
 
 
